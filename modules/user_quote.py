@@ -90,7 +90,7 @@ def get_quotes(phenny, input):
     if quotes_string:
         try:
             data = urllib.urlencode({"content": quotes_string.encode("utf-8")})
-            request = urllib2.Request("http://dpaste.com/api/v2",data)
+            request = urllib2.Request("http://dpaste.com/api/v2/",data)
             response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
             return phenny.say(u"Could not create quotes file: error code {}, reason: {}".format(
