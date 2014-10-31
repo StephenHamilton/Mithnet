@@ -1,9 +1,9 @@
 import pickle
 import random
 import re
-import urllib
-import urllib2
+
 from modules import filename
+import web
 
 MAX_LOGS = 30
 MAX_QUOTES = 100
@@ -90,9 +90,7 @@ def get_quotes(phenny, input):
         quotes_string = u"\n".join(u"<{}> {}".format(nick, quote) for quote, submitter in phenny.quotes.get(nick, []))
     if quotes_string:
         try:
-            data = urllib.urlencode({"content": quotes_string.encode("utf-8")})
-            request = urllib2.Request("http://dpaste.com/api/v2/", data)
-            response = urllib2.urlopen(request)
+            url = web.dpaste(phenny, quotes_string)
         except urllib2.HTTPError as e:
             return phenny.say(u"Could not create quotes file: error code {}, reason: {}".format(
                 e.code, e.reason))

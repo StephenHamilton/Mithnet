@@ -6,6 +6,8 @@ About: http://inamidst.com/phenny/
 """
 
 import re, urllib, urllib2
+import hashlib
+import time
 from htmlentitydefs import name2codepoint
 
 
@@ -81,3 +83,26 @@ def json(text):
         text = r_string.sub(lambda m: 'u' + m.group(1), text)
         return eval(text.strip(' \t\r\n'), env, {})
     raise ValueError('Input must be serialised JSON.')
+
+
+def dpaste(phenny, text):
+    if not hasattr(phenny, 'dpaste_cache'):
+        phenny.dpaste_cache = {}
+    DAY = 1000 * 60 * 60 * 24
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
+    text_hash = hashlib.md5(text).hexdigest()
+    if text_hash in phenny.dpaste_cache:
+        # Ensure it's up to date.
+        url, expire_time = phenny.dpaste_cache[text_hash]
+        if expire_time > time.time():
+            if get(url + ".txt") == text_hash:
+                return url
+            phenny.notice("Cache miss!")
+        del phenny.dpaste_cache[text_hash]
+    data = urllib.urlencode({"content": text})
+    request = urllib2.Request("http://dpaste.com/api/v2/", data)
+    response = urllib2.urlopen(request)
+    url = response.geturl()
+    phenny.dpaste_cache[text_hash] = (url, time.time() + DAY * 6)
+    return url
