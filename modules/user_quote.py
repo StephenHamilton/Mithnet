@@ -81,6 +81,7 @@ def get_quote(phenny, input):
     return phenny.say("%s has never said anything noteworthy." % input.group(2))
 get_quote.rule = (["quote"], r"(\S+)", r"? *$")
 
+
 def get_quotes(phenny, input):
     if input.group(2) is None:
         quotes_string = u"\n".join(u"<{}> {}".format(nick, quote) for nick, quotes in phenny.quotes.items() for quote, submitter in quotes)
@@ -90,7 +91,7 @@ def get_quotes(phenny, input):
     if quotes_string:
         try:
             data = urllib.urlencode({"content": quotes_string.encode("utf-8")})
-            request = urllib2.Request("http://dpaste.com/api/v2/",data)
+            request = urllib2.Request("http://dpaste.com/api/v2/", data)
             response = urllib2.urlopen(request)
         except urllib2.HTTPError as e:
             return phenny.say(u"Could not create quotes file: error code {}, reason: {}".format(
@@ -101,10 +102,12 @@ def get_quotes(phenny, input):
         return phenny.say("No quotes were found.")
 get_quotes.rule = (["quotes"], r"(\S+)", r"? *$")
 
+
 def qnuke(phenny, input):
     if input.group(2) is None:
         return
-    if input.nick not in phenny.ident_admin: return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
+    if input.nick not in phenny.ident_admin:
+        return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
     nick = input.group(2).lower()
     if nick in phenny.quotes:
         del phenny.quotes[nick]
@@ -115,7 +118,8 @@ qnuke.rule = (["qnuke"], r"(\S+)")
 
 
 def debug_log(phenny, input):
-    if input.nick not in phenny.ident_admin: return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
+    if input.nick not in phenny.ident_admin:
+        return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
     tor = "["
     for log in phenny.logs:
         if len(tor) + len(log) >= 490:
