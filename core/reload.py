@@ -87,13 +87,5 @@ f_load.rule = (['load'], r'(\S+)?')
 f_load.priority = 'low'
 f_load.thread = False
 
-def f_restart(phenny, input):
-   if input.nick not in phenny.ident_admin: return phenny.reply('Requires authorization. Use .auth to identify')
-   os.execv(__file__, sys.argv)
-f_restart.name = 'restart'
-f_restart.commands = ['restart']
-f_restart.priority = 'low'
-f_restart.thread = False
-
 if __name__ == '__main__': 
    print __doc__.strip()
