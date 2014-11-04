@@ -1,6 +1,7 @@
 import pickle
 import random
 import re
+import urllib2
 
 from modules import filename
 import web
