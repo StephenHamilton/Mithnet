@@ -25,6 +25,7 @@ class IRCBot(irc.Client):
 
   def setup(self):
     self.modules = {}
+    self.dpaste_cache = {}
 
     home = os.getcwd()
 

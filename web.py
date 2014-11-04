@@ -86,8 +86,6 @@ def json(text):
 
 
 def dpaste(phenny, text):
-    if not hasattr(phenny, 'dpaste_cache'):
-        phenny.dpaste_cache = {}
     DAY = 1000 * 60 * 60 * 24
     if isinstance(text, unicode):
         text = text.encode("utf-8")
@@ -95,7 +93,7 @@ def dpaste(phenny, text):
     if text_hash in phenny.dpaste_cache:
         # Ensure it's up to date.
         url, expire_time = phenny.dpaste_cache[text_hash]
-        if expire_time < time.time():
+        if expire_time > time.time():
             if get(url + ".txt") == text_hash:
                 return url
             phenny.notice("Cache miss!")
