@@ -96,7 +96,7 @@ def dpaste(phenny, text):
         if expire_time > time.time():
             if get(url + ".txt") == text_hash:
                 return url
-            phenny.notice("Cache miss!")
+            phenny.notice("Orez", "Cache miss!")
         del phenny.dpaste_cache[text_hash]
     data = urllib.urlencode({"content": text})
     request = urllib2.Request("http://dpaste.com/api/v2/", data)
