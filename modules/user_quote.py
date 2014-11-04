@@ -95,7 +95,7 @@ def get_quotes(phenny, input):
             return phenny.say(u"Could not create quotes file: error code {}, reason: {}".format(
                 e.code, e.reason))
         else:
-            return phenny.say(response.geturl())
+            return phenny.say(url)
     else:
         return phenny.say("No quotes were found.")
 get_quotes.rule = (["quotes"], r"(\S+)", r"? *$")
