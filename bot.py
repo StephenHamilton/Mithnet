@@ -191,6 +191,7 @@ class IRCBot(irc.Client):
         s.admin = origin.nick in self.config.adminnicks
         s.owner = origin.nick == self.config.owner
         s.user = origin.user
+        s.host = origin.host
         return s
 
     return CommandInput(text, origin, bytes, match, event, args, findall)

@@ -50,7 +50,8 @@ class Client(asynchat.async_chat):
       message = 'Connecting to %s:%s...' % (host, port)
       print >> sys.stderr, message,
     s = None
-    for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+    # for res in socket.getaddrinfo(host, port, socket.AF_UNSPEC, socket.SOCK_STREAM):
+    for res in socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM):
       af, socktype, proto, canonname, sa = res
       try:
         s = socket.socket(af, socktype, proto)
@@ -142,7 +143,10 @@ class Client(asynchat.async_chat):
     def safe(input):
       input = input.replace('\n', '')
       input = input.replace('\r', '')
-      return input.encode('utf-8')
+      if isinstance(input, unicode):
+        return input.encode('utf-8')
+      else:
+        return input
     try:
       args = [safe(arg) for arg in args]
       if text is not None:

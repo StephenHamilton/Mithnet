@@ -47,6 +47,8 @@ def setup(self):
 
 
 def f_remind(phenny, input): 
+   if re.match("zellio",input.nick.lower()) or re.match("zellio",input.user.lower()) or  re.match(".*\.es\.its\.nyu\.edu",input.host.lower()):
+      return
    teller = input.nick
 
    # @@ Multiple comma-separated tellees? Cf. Terje, #swhack, 2006-04-15
