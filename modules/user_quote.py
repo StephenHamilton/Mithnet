@@ -139,7 +139,7 @@ def dpaste(phenny, text):
         # Ensure it's up to date.
         url, expire_time = phenny.dpaste_cache[text_hash]
         if expire_time > time.time():
-            if get(url + ".txt") == text_hash:
+            if web.get(url + ".txt") == text_hash:
                 return url
             phenny.notice("Orez", "Cache miss!")
         del phenny.dpaste_cache[text_hash]
