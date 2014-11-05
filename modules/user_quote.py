@@ -131,7 +131,7 @@ debug_log.rule = (["debuglog"], )
 
 def dpaste(phenny, text):
     import urllib, hashlib, time
-    DAY = 1000 * 60 * 60 * 24
+    DAY = 60 * 60 * 24
     if isinstance(text, unicode):
         text = text.encode("utf-8")
     text_hash = hashlib.md5(text).hexdigest()
@@ -139,7 +139,9 @@ def dpaste(phenny, text):
         # Ensure it's up to date.
         url, expire_time = phenny.dpaste_cache[text_hash]
         if expire_time > time.time():
-            if web.get(url + ".txt") == text_hash:
+            request = urllib2.Request(uri, headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"})
+            u = urllib2.urlopen(request)
+            if u.getcode() == 200:
                 return url
             phenny.notice("Orez", "Cache miss!")
         del phenny.dpaste_cache[text_hash]
