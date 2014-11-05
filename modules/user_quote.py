@@ -130,7 +130,7 @@ debug_log.rule = (["debuglog"], )
 
 
 def dpaste(phenny, text):
-    import urllib
+    import urllib, hashlib
     DAY = 1000 * 60 * 60 * 24
     if isinstance(text, unicode):
         text = text.encode("utf-8")
