@@ -91,7 +91,7 @@ def get_quotes(phenny, input):
         quotes_string = u"\n".join(u"<{}> {}".format(nick, quote) for quote, submitter in phenny.quotes.get(nick, []))
     if quotes_string:
         try:
-            url = web.dpaste(phenny, quotes_string)
+            url = dpaste(phenny, quotes_string)
         except urllib2.HTTPError as e:
             return phenny.say(u"Could not create quotes file: error code {}, reason: {}".format(
                 e.code, e.reason))
@@ -127,3 +127,25 @@ def debug_log(phenny, input):
         tor += log + ", "
     return phenny.notice(input.nick, tor + "]")
 debug_log.rule = (["debuglog"], )
+
+
+def dpaste(phenny, text):
+    import urllib
+    DAY = 1000 * 60 * 60 * 24
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
+    text_hash = hashlib.md5(text).hexdigest()
+    if text_hash in phenny.dpaste_cache:
+        # Ensure it's up to date.
+        url, expire_time = phenny.dpaste_cache[text_hash]
+        if expire_time > time.time():
+            if get(url + ".txt") == text_hash:
+                return url
+            phenny.notice("Orez", "Cache miss!")
+        del phenny.dpaste_cache[text_hash]
+    data = urllib.urlencode({"content": text})
+    request = urllib2.Request("http://dpaste.com/api/v2/", data)
+    response = urllib2.urlopen(request)
+    url = response.geturl()
+    phenny.dpaste_cache[text_hash] = (url, time.time() + DAY * 6)
+    return url
