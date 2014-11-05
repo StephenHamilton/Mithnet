@@ -139,7 +139,7 @@ def dpaste(phenny, text):
         # Ensure it's up to date.
         url, expire_time = phenny.dpaste_cache[text_hash]
         if expire_time > time.time():
-            request = urllib2.Request(uri, headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"})
+            request = urllib2.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"})
             u = urllib2.urlopen(request)
             if u.getcode() == 200:
                 return url
