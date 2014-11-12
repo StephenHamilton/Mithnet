@@ -323,7 +323,6 @@ def change_karma(phenny, target, sender, karma):
 # verify_nickserv_alias.priority = "low"
 # verify_nickserv_alias.thread = False
 
-@ensure_karma
 def _tell_top_karma(phenny):
     if len(phenny.karmas) > 0:
         all_karm = dict(((key, kn.karma) for key, kn in phenny.karmas.items()))
