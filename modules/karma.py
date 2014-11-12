@@ -332,7 +332,7 @@ def _tell_top_karma(phenny):
             s_karm = [phenny.fools_dict[u] for u in s_karm]
             all_karm = dict(((key, karma / 2 - 5) for key, karma in all_karm.items()))
         msg = '\n'.join("{}: {}".format(x, all_karm[x]) for x in s_karm)
-        dpaste(phenny, msg)
+        phenny.say(dpaste(phenny, msg))
     else:
         phenny.say("You guys don't have any karma apparently.")
 
