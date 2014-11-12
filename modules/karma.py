@@ -547,7 +547,7 @@ if __name__ == '__main__':
 
 def dpaste(phenny, text):
     # TODO: delete me once the bot is restarted.
-    import urllib, hashlib, time
+    import urllib, hashlib, time, urllib2
     DAY = 60 * 60 * 24
     if isinstance(text, unicode):
         text = text.encode("utf-8")
