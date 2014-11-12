@@ -9,7 +9,6 @@ import pickle
 import string
 from modules import filename
 
-SHOW_TOP_DEFAULT = 6
 KVERSION = "0.1.6"
 
 def enum(*sequential, **named):
@@ -325,7 +324,7 @@ def change_karma(phenny, target, sender, karma):
 # verify_nickserv_alias.thread = False
 
 @ensure_karma
-def _tell_top_x_karma(phenny, show_top):
+def _tell_top_karma(phenny):
     if len(phenny.karmas) > 0:
         all_karm = dict(((key, kn.karma) for key, kn in phenny.karmas.items()))
         karm = dict(((key, kn.karma) for key, kn in phenny.karmas.items() if kn.root() == kn))  # remove duplicates due to aliases
@@ -333,13 +332,8 @@ def _tell_top_x_karma(phenny, show_top):
         if is_fools():
             s_karm = [phenny.fools_dict[u] for u in s_karm]
             all_karm = dict(((key, karma / 2 - 5) for key, karma in all_karm.items()))
-        msg = ', '.join([x + ": " + str(all_karm[x]) for x in s_karm[:show_top]])
-        if msg:
-            phenny.say("Best karma: " + msg)
-        worst_karmas = ', '.join([x + ": " + str(all_karm[x])
-                for x in s_karm[:-show_top-1:-1] if all_karm[x] < 0])
-        if worst_karmas:
-            phenny.say("Worst karma: "+ worst_karmas)
+        msg = '\n'.join("{}: {}".format(x, all_karm[x]) for x in s_karm)
+        dpaste(phenny, msg)
     else:
         phenny.say("You guys don't have any karma apparently.")
 
@@ -361,15 +355,10 @@ get_karma_contrib.rule = (['karma'], r'contrib (\S+)\s*$')
 
 @ensure_karma
 def get_top_karma(phenny, input):
-    _tell_top_x_karma(phenny, SHOW_TOP_DEFAULT)
+    _tell_top_x_karma(phenny)
 get_top_karma.name = 'karma'
 get_top_karma.rule = (['karma'], '', r'?$')
 
-@ensure_karma
-def get_top_x_karma(phenny, input):
-    _tell_top_x_karma(phenny, int(input.group(2)))
-get_top_x_karma.name = 'karma'
-get_top_x_karma.rule = (['karma'], r'top (\d)\s*$')
 
 @ensure_karma
 def get_user_karma(phenny, input):
@@ -555,3 +544,28 @@ def report_karma_update(phenny, nick, silent=False):
 
 if __name__ == '__main__':
     print __doc__.strip()
+
+
+def dpaste(phenny, text):
+    # TODO: delete me once the bot is restarted.
+    import urllib, hashlib, time
+    DAY = 60 * 60 * 24
+    if isinstance(text, unicode):
+        text = text.encode("utf-8")
+    text_hash = hashlib.md5(text).hexdigest()
+    if text_hash in phenny.dpaste_cache:
+        # Ensure it's up to date.
+        url, expire_time = phenny.dpaste_cache[text_hash]
+        if expire_time > time.time():
+            request = urllib2.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"})
+            u = urllib2.urlopen(request)
+            if u.getcode() == 200:
+                return url
+            phenny.notice("Orez", "Cache miss!")
+        del phenny.dpaste_cache[text_hash]
+    data = urllib.urlencode({"content": text})
+    request = urllib2.Request("http://dpaste.com/api/v2/", data)
+    response = urllib2.urlopen(request)
+    url = response.geturl()
+    phenny.dpaste_cache[text_hash] = (url, time.time() + DAY * 6)
+    return url

@@ -130,6 +130,7 @@ debug_log.rule = (["debuglog"], )
 
 
 def dpaste(phenny, text):
+    # TODO: delete me once the bot is restarted.
     import urllib, hashlib, time
     DAY = 60 * 60 * 24
     if isinstance(text, unicode):
