@@ -324,6 +324,7 @@ def change_karma(phenny, target, sender, karma):
 # verify_nickserv_alias.thread = False
 
 def _tell_top_karma(phenny):
+    show_top = 6
     if len(phenny.karmas) > 0:
         all_karm = dict(((key, kn.karma) for key, kn in phenny.karmas.items()))
         karm = dict(((key, kn.karma) for key, kn in phenny.karmas.items() if kn.root() == kn))  # remove duplicates due to aliases
@@ -331,8 +332,17 @@ def _tell_top_karma(phenny):
         if is_fools():
             s_karm = [phenny.fools_dict[u] for u in s_karm]
             all_karm = dict(((key, karma / 2 - 5) for key, karma in all_karm.items()))
-        msg = '\n'.join("{}: {}".format(x, all_karm[x]) for x in s_karm)
-        phenny.say(dpaste(phenny, msg))
+
+        msg = ', '.join([x + ": " + str(all_karm[x]) for x in s_karm[:show_top]])
+        if msg:
+            phenny.notice(input.nick, "Best karma: " + msg)
+        worst_karmas = ', '.join([x + ": " + str(all_karm[x])
+                for x in s_karm[:-show_top-1:-1] if all_karm[x] < 0])
+        if worst_karmas:
+            phenny.notice(input.nick, "Worst karma: " + worst_karmas)
+
+        dmsg = '\n'.join("{}: {}".format(x, all_karm[x]) for x in s_karm)
+        phenny.say(dpaste(phenny, dmsg))
     else:
         phenny.say("You guys don't have any karma apparently.")
 
