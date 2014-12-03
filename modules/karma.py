@@ -9,6 +9,8 @@ import pickle
 import string
 from modules import filename
 
+import web
+
 KVERSION = "0.1.6"
 
 def enum(*sequential, **named):
@@ -342,7 +344,7 @@ def _tell_top_karma(phenny, input):
             phenny.notice(input.nick, "Worst karma: " + worst_karmas)
 
         dmsg = '\n'.join("{}: {}".format(x, all_karm[x]) for x in s_karm)
-        phenny.say(dpaste(phenny, dmsg))
+        phenny.say(web.dpaste(phenny, dmsg))
     else:
         phenny.say("You guys don't have any karma apparently.")
 
@@ -553,28 +555,3 @@ def report_karma_update(phenny, nick, silent=False):
 
 if __name__ == '__main__':
     print __doc__.strip()
-
-
-def dpaste(phenny, text):
-    # TODO: delete me once the bot is restarted.
-    import urllib, hashlib, time, urllib2
-    DAY = 60 * 60 * 24
-    if isinstance(text, unicode):
-        text = text.encode("utf-8")
-    text_hash = hashlib.md5(text).hexdigest()
-    if text_hash in phenny.dpaste_cache:
-        # Ensure it's up to date.
-        url, expire_time = phenny.dpaste_cache[text_hash]
-        if expire_time > time.time():
-            request = urllib2.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0"})
-            u = urllib2.urlopen(request)
-            if u.getcode() == 200:
-                return url
-            phenny.notice("Orez", "Cache miss!")
-        del phenny.dpaste_cache[text_hash]
-    data = urllib.urlencode({"content": text})
-    request = urllib2.Request("http://dpaste.com/api/v2/", data)
-    response = urllib2.urlopen(request)
-    url = response.geturl()
-    phenny.dpaste_cache[text_hash] = (url, time.time() + DAY * 6)
-    return url
