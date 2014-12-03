@@ -1,3 +1,4 @@
+import itertools
 import pickle
 import random
 import re
@@ -74,7 +75,11 @@ def get_quote(phenny, input):
     if input.group(2) is None:
         if not phenny.quotes:
             return phenny.say("You guys don't even have any quotes.")
-        nick = random.choice(phenny.quotes.keys())
+        return phenny.say(u"<{}> {}".format(
+            *random.choice([
+                (nick, quote[0])
+                for nick, quotes in phenny.quotes.iteritems()
+                for quote in quotes])))
     else:
         nick = input.group(2).lower()
     if nick in phenny.quotes:
