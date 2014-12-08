@@ -52,6 +52,9 @@ def log(phenny, input):
 log.rule = r"(.*)"
 
 
+_format_quote = u"<{}> {}".format
+
+
 def quote_me(phenny, input):
     if input.group(2) is None or input.group(3) is None:
         return phenny.say("I'm not convinced you're even trying to quote someone???")
@@ -75,25 +78,31 @@ def get_quote(phenny, input):
     if input.group(2) is None:
         if not phenny.quotes:
             return phenny.say("You guys don't even have any quotes.")
-        return phenny.say(u"<{}> {}".format(
-            *random.choice([
-                (nick, quote[0])
-                for nick, quotes in phenny.quotes.iteritems()
-                for quote in quotes])))
+        nick, get_quote.last_quote, get_quote.last_sender = random.choice([
+            (nick, quote, sender)
+            for nick, quotes in phenny.quotes.iteritems()
+            for quote, sender in quotes])
+        return phenny.say(_format_quote(nick, get_quote.last_quote))
     else:
         nick = input.group(2).lower()
     if nick in phenny.quotes:
-        return phenny.say(u"<{}> {}".format(nick, random.choice(phenny.quotes[nick])[0]))
+        get_quote.last_quote, get_quote.last_sender = random.choice(phenny.quotes[nick])
+        return phenny.say(_format_quote(nick, get_quote.last_quote))
     return phenny.say("%s has never said anything noteworthy." % input.group(2))
 get_quote.rule = (["quote"], r"(\S+)", r"? *$")
 
 
 def get_quotes(phenny, input):
     if input.group(2) is None:
-        quotes_string = u"\n".join(u"<{}> {}".format(nick, quote) for nick, quotes in phenny.quotes.items() for quote, submitter in quotes)
+        quotes_string = u"\n".join(
+            _format_quote(nick, quote)
+            for nick, quotes in phenny.quotes.items()
+            for quote, submitter in quotes)
     else:
         nick = input.group(2).lower()
-        quotes_string = u"\n".join(u"<{}> {}".format(nick, quote) for quote, submitter in phenny.quotes.get(nick, []))
+        quotes_string = u"\n".join(
+            _format_quote(nick, quote)
+            for quote, submitter in phenny.quotes.get(nick, []))
     if quotes_string:
         try:
             url = web.dpaste(phenny, quotes_string)
@@ -105,6 +114,29 @@ def get_quotes(phenny, input):
     else:
         return phenny.say("No quotes were found.")
 get_quotes.rule = (["quotes"], r"(\S+)", r"? *$")
+
+
+def get_quoter(phenny, input):
+    nick = input.group(1)
+    if nick is None:  # Last message
+        if not hasattr(get_quote, 'last_sender'):
+            return phenny.say(u"¯\_(ツ)_/¯")
+        sender = get_quote.last_sender
+        message = get_quote.last_quote
+    else:  # Match quote
+        message = input.group(2)
+        quotes = phenny.quotes.get(nick, [])
+        sender = next((
+            sender for quote, sender in quotes
+            if quote == message
+        ), None)
+        if sender is None:
+            return phenny.say("I'm not convinced {} ever said that.".format(nick))
+    if message.startswith("Nethaera: quote"):
+        return phenny.say("{} is the dunkass who quoted that.".format(sender))
+    return phenny.say("{} is the one who quoted that.".format(sender))
+
+get_quoter.rule = (["quoter"], r"<([^>]+)> (.*)", r"?$")
 
 
 def qnuke(phenny, input):
