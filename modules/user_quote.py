@@ -118,14 +118,14 @@ get_quotes.rule = (["quotes"], r"(\S+)", r"? *$")
 
 
 def get_quoter(phenny, input):
-    nick = input.group(1)
+    nick = input.group(2)
     if nick is None:  # Last message
         if not hasattr(get_quote, 'last_sender'):
             return phenny.say(u"¯\_(ツ)_/¯")
         sender = get_quote.last_sender
         message = get_quote.last_quote
     else:  # Match quote
-        message = input.group(2)
+        message = input.group(3)
         quotes = phenny.quotes.get(nick, [])
         sender = next((
             sender for quote, sender in quotes
