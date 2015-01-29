@@ -6,6 +6,8 @@ logs = collections.defaultdict(lambda: [None, collections.deque()])
 
 def peer_pressure(phenny, input):
     global logs
+    if input.sender != "#bot_test_neth":
+        return
     if input.sender[0] != "#":
         return
     last_word, log_queue = logs[input.sender]
