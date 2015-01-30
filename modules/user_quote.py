@@ -159,6 +159,7 @@ def debug_log(phenny, input):
         return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
     tor = "["
     for log in phenny.logs:
+        log = "{}: {}".format(*log)
         if len(tor) + len(log) >= 490:
             phenny.notice(tor)
             tor = ""
