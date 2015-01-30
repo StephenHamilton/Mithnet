@@ -10,8 +10,11 @@ def peer_pressure(phenny, input):
         return
     if input.sender[0] != "#":
         return
-    last_word, log_queue = logs[input.sender]
-    phenny.say(map(str, (last_word, log_queue)))
+    try:  # Reload garbage
+        last_word, log_queue = logs[input.sender]
+    except:
+        return
+    phenny.say(str(last_word) + str(log_queue))
     # Don't respond twice to the same chain
     if last_word == input:
         return
