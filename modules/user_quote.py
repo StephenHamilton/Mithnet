@@ -157,9 +157,9 @@ qnuke.rule = (["qnuke"], r"(\S+)")
 def debug_log(phenny, input):
     if input.nick not in phenny.ident_admin:
         return phenny.notice(input.nick, 'Requires authorization. Use .auth to identify')
-    tor = "["
+    tor = "{} [".format(len(phenny.logs))
     for log in phenny.logs:
-        log = "{}: {}".format(*log)
+        log = "“{}: {}”".format(*log)
         if len(tor) + len(log) >= 490:
             phenny.notice(tor)
             tor = ""
