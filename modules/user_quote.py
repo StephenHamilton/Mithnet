@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import itertools
 import pickle
 import random
@@ -26,7 +27,7 @@ def upgrade(self, cur_version):
 
 
 def setup(self):
-    self.logs = []
+    self.logs = collections.deque()
     self.quotes = {}
     try:
         f = open(filename(self, "quotes"), "r")
@@ -48,8 +49,10 @@ def save_quotes(self):
 
 def log(phenny, input):
     if MAX_LOGS is not None:
-        phenny.logs.append((input.nick.lower(), input.group(1).replace("\n", "").lstrip(" ")))
-        phenny.logs = phenny.logs[-MAX_LOGS:]
+        logs = phenny.logs
+        logs.append((input.nick.lower(), input.group(1).replace("\n", "").lstrip(" ")))
+        while len(logs) > MAX_LOGS:
+            logs.popleft()
 log.rule = r"(.*)"
 
 
