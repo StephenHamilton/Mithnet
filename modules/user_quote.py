@@ -161,7 +161,7 @@ def debug_log(phenny, input):
     for log in phenny.logs:
         log = "“{}: {}”".format(*log)
         if len(tor) + len(log) >= 490:
-            phenny.notice(tor)
+            phenny.notice(input.nick, tor)
             tor = ""
         tor += log + ", "
     return phenny.notice(input.nick, tor + "]")
