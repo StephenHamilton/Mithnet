@@ -14,7 +14,7 @@ def peer_pressure(phenny, input):
         last_word, log_queue = logs[input.sender]
     except:
         return
-    phenny.say(str(last_word) + str(log_queue))
+    phenny.say(str(last_word) + " " + str(log_queue))
     # Don't respond twice to the same chain
     if last_word == input:
         return
@@ -23,7 +23,7 @@ def peer_pressure(phenny, input):
     while len(log_queue) > REPEAT_LIMIT:
         log_queue.popleft()
     # If all the messages are that last message.
-    if all(q == input for q in log_queue):
+    if all(q == input for q in log_queue) and len(log_queue) >= REPEAT_LIMIT:
         phenny.say(input)
         log_queue.clear()
         logs[input.sender][0] = input
