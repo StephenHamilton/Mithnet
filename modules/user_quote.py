@@ -164,4 +164,4 @@ def debug_log(phenny, input):
             tor = ""
         tor += log + ", "
     return phenny.notice(input.nick, tor + "]")
-debug_log.rule = (["debuglog"], )
+debug_log.rule = (["debuglog"], "")
