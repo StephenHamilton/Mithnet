@@ -98,11 +98,10 @@ def dpaste(phenny, text):
             u = urllib2.urlopen(request)
             if u.getcode() == 200:
                 return url
-            phenny.notice("Orez", "Cache miss!")
         del phenny.dpaste_cache[text_hash]
     data = urllib.urlencode({"content": text})
     request = urllib2.Request("http://dpaste.com/api/v2/", data)
     response = urllib2.urlopen(request)
-    url = response.geturl()
+    url = response.read().strip()
     phenny.dpaste_cache[text_hash] = (url, time.time() + DAY * 6)
     return url
