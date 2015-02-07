@@ -51,48 +51,47 @@ def f_remind(phenny, input):
       return
    teller = input.nick
 
-   # @@ Multiple comma-separated tellees? Cf. Terje, #swhack, 2006-04-15
-   verb, tellee, msg = input.groups()
+   verb, tellees, msg = input.groups()
    verb = verb.encode('utf-8')
-   tellee = tellee.encode('utf-8')
+   tellees = tellee.encode('utf-8')
    msg = msg.encode('utf-8')
 
-   tellee_original = tellee.rstrip('.,:;')
-   tellee = tellee_original.lower()
-
+   tellees_original = tellees.rstrip('.,:;')
+   tellees = tellees_original.lower().split(",")
    if not os.path.exists(phenny.tell_filename): 
       return
+   
+   if teller.lower() in tellees:
+      phenny.say('You can %s yourself that.' % verb)
+   elif phenny.nick.lower() in tellees || 'me' in tellees:
+      phenny.say("Hey, I may be a bot, but that doesnt mean I'm stupid!")
+   else:
 
-   if len(tellee) > 20: 
-      return phenny.reply('That nickname is too long.')
-   if not msg:
-      return phenny.reply(verb + ' ' + tellee + ' what?')
-
-   timenow = repr(time.time())
-   if not tellee in (teller.lower(), phenny.nick.lower(), 'me'): # @@
-      # @@ <deltab> and year, if necessary
-      warn = False
-      if not phenny.reminders.has_key(tellee): 
-         phenny.reminders[tellee] = [(teller, verb, timenow, msg)]
-      else: 
-         if len(phenny.reminders[tellee]) >= 2*maximum:
-            return phenny.reply("No. I can't remember that many things")
-         #    warn = True
-         phenny.reminders[tellee].append((teller, verb, timenow, msg))
-      # @@ Stephanie's augmentation
+      for tellee in tellees:
+         if len(tellee) > 20: 
+            return phenny.reply('That nickname is too long.')
+         if not msg:
+            return phenny.reply(verb + ' ' + tellee + ' what?')
+         
+         timenow = repr(time.time())
+         if not phenny.reminders.has_key(tellee): 
+            phenny.reminders[tellee] = [(teller, verb, timenow, msg)]
+         else: 
+            if len(phenny.reminders[tellee]) >= 2*maximum:
+               return phenny.reply("No. I can't remember that many things")
+            phenny.reminders[tellee].append((teller, verb, timenow, msg))
+         
       response = "I'll pass that on when %s is around." % tellee_original
-      # if warn: response += (" I'll have to use a pastebin, though, so " + 
-      #                       "your message may get lost.")
 
       rand = random.random()
-      if rand > 0.999: response = "yeah, yeah"
-      elif rand > 0.95: response = "yeah, sure, whatever"
+      
+      if rand > 0.999:
+         response = "yeah, yeah"
+      elif rand > 0.95:
+         response = "yeah, sure, whatever"
 
       phenny.reply(response)
-   elif teller.lower() == tellee: 
-      phenny.say('You can %s yourself that.' % verb)
-   else: phenny.say("Hey, I may be a bot, but that doesnt mean I'm stupid!")
-   dumpReminders(phenny.tell_filename, phenny.reminders) # @@ tell
+      dumpReminders(phenny.tell_filename, phenny.reminders) # @@ tell
 f_remind.name = 'remind'
 f_remind.rule = ('$nick', ['tell', 'ask', 'show'], r'(\S+) (.*)')
 
