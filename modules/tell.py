@@ -63,7 +63,7 @@ def f_remind(phenny, input):
    
    if teller.lower() in tellees:
       phenny.say('You can %s yourself that.' % verb)
-   elif phenny.nick.lower() in tellees || 'me' in tellees:
+   elif phenny.nick.lower() in tellees or 'me' in tellees:
       phenny.say("Hey, I may be a bot, but that doesnt mean I'm stupid!")
    else:
 
@@ -74,7 +74,7 @@ def f_remind(phenny, input):
             return phenny.reply(verb + ' ' + tellee + ' what?')
          
          timenow = repr(time.time())
-         if not phenny.reminders.has_key(tellee): 
+         if tellee not in phenny.reminders: 
             phenny.reminders[tellee] = [(teller, verb, timenow, msg)]
          else: 
             if len(phenny.reminders[tellee]) >= 2*maximum:
